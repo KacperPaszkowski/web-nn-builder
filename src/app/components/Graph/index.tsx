@@ -1,13 +1,15 @@
 import ReactFlow, { Background, BackgroundVariant, ReactFlowProvider, Node as NodeType, NodeProps, applyNodeChanges, applyEdgeChanges, addEdge, OnNodesChange, OnEdgesChange, OnConnect, Edge } from "reactflow";
 import 'reactflow/dist/style.css';
 import Node from "../Node";
+import { v4 as uuidv4 } from 'uuid'
 import { NodeDefinition } from "@/app/types";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import NodeEdge from "../Connection";
 import { shallow } from 'zustand/shallow'
-import useStore from "@/app/store/store";
 import { RFState } from "@/app/types";
 import ToolBar from "../ToolBar";
+import { StoreApi, UseBoundStore } from "zustand";
+import { StoreContext } from "@/app/store/provider";
 
 const selector = (state: RFState) => ({
     nodes: state.nodes,
@@ -31,13 +33,18 @@ const nodeTypes = {
 }
 
 function Graph() {
-    const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(selector, shallow);
+    const store = useContext(StoreContext);
+    if (!store) {
+        return <></>
+    }
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = store(selector, shallow);
 
 
     return (
         <ReactFlowProvider>
             <div className="w-screen h-screen">
                 <ReactFlow
+                    id={uuidv4()}
                     nodes={nodes}
                     edges={edges}
                     onNodesChange={onNodesChange}
@@ -52,22 +59,6 @@ function Graph() {
                     <Background variant={BackgroundVariant.Dots} gap={30} size={1} />
                     <ToolBar />
                 </ReactFlow>
-
-                {/* <ReactFlow
-                    id='main'
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onEdgeUpdate={onEdgeUpdate}
-                    onConnect={onConnect}
-                    nodeTypes={nodeTypes}
-                    edgeTypes={edgeTypes}
-                    proOptions={{ hideAttribution: true }}
-                >
-                    
-                    <Background variant={BackgroundVariant.Dots} gap={30} size={1} />
-                </ReactFlow> */}
             </div>
         </ReactFlowProvider>
     );

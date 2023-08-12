@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Handle, Position, Node as NodeType, NodeProps, useReactFlow } from 'reactflow';
 import Input from '../Input';
 import { NodeDefinition, NodeInput, NodeOutput, NodeVariable, NodeVariableValues, RFState } from '@/app/types';
 import { validateConnection } from "@/app/validate";
 import { v4 as uuidv4 } from 'uuid'
-import useStore from '@/app/store/store';
 import AccordionVariables from './variables';
+import { StoreContext } from '@/app/store/provider';
 
 type NodeData = {
     name: string
@@ -18,7 +18,12 @@ type NodeData = {
 }
 
 function Node({ id, data }: NodeProps<NodeData>) {
-    const state: RFState = useStore()
+    const store = useContext(StoreContext);
+    if (!store) {
+        return <></>
+    }
+
+    const state: RFState = store()
 
     const handleVariableChange = (event: React.ChangeEvent<HTMLInputElement>, varName: string) => {
         if (!Number.isNaN(parseInt(event.target.value))) {

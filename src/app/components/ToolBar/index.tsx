@@ -1,13 +1,39 @@
-import useStore from '@/app/store/store';
 import { RFState } from '@/app/types';
 import { BsGrid3X3 } from 'react-icons/bs'
 import { MdOutlineInput, MdOutlinePhotoSizeSelectSmall } from 'react-icons/md'
 import { TbArrowMerge } from 'react-icons/tb'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { Conv2D, Input, MaxPool2D, Concat, Add } from '@/app/nodedef'
+import { useStoreApi } from 'reactflow';
+import { StoreApi, UseBoundStore } from 'zustand';
+import { useContext } from 'react';
+import { StoreContext } from '@/app/store/provider';
 
 function ToolBar() {
-    const state: RFState = useStore()
+    const apiStore = useStoreApi();
+
+    const store = useContext(StoreContext);
+    if (!store) {
+        return <></>
+    }
+
+    const state: RFState = store()
+
+    const getPosition = () => {
+        const {
+            height,
+            width,
+            transform: [transformX, transformY, zoomLevel]
+        } = apiStore.getState();
+
+        const zoomMultiplier = 1 / zoomLevel;
+
+        const centerX = -transformX * zoomMultiplier + (width * zoomMultiplier) / 2;
+        const centerY =
+            -transformY * zoomMultiplier + (height * zoomMultiplier) / 2;
+
+        return { 'x': centerX - 100, 'y': centerY - 100 }
+    }
 
     return (
         <div
@@ -15,7 +41,7 @@ function ToolBar() {
         >
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
-                onClick={() => state.addNode(Input())}
+                onClick={() => state.addNode(Input(getPosition()))}
             >
                 <MdOutlineInput
                     className="w-full h-full p-3 text-white cursor-pointer"
@@ -24,7 +50,7 @@ function ToolBar() {
 
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
-                onClick={() => state.addNode(Conv2D())}
+                onClick={() => state.addNode(Conv2D(getPosition()))}
             >
                 <BsGrid3X3
                     className="w-full h-full p-3 text-white cursor-pointer"
@@ -33,7 +59,7 @@ function ToolBar() {
 
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
-                onClick={() => state.addNode(MaxPool2D())}
+                onClick={() => state.addNode(MaxPool2D(getPosition()))}
             >
                 <MdOutlinePhotoSizeSelectSmall
                     className="w-full h-full p-3 text-white cursor-pointer"
@@ -42,7 +68,7 @@ function ToolBar() {
 
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
-                onClick={() => state.addNode(Concat())}
+                onClick={() => state.addNode(Concat(getPosition()))}
             >
                 <TbArrowMerge
                     className="w-full h-full p-3 text-white cursor-pointer"
@@ -51,7 +77,7 @@ function ToolBar() {
 
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
-                onClick={() => state.addNode(Add())}
+                onClick={() => state.addNode(Add(getPosition()))}
             >
                 <AiOutlinePlusCircle
                     className="w-full h-full p-3 text-white cursor-pointer"

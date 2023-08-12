@@ -18,128 +18,134 @@ import {
 import { initialNodes } from '../init';
 
 
-export const useStore = create<RFState>((set, get) => ({
-    nodes: initialNodes,
-    edges: [],
+export const createStore = () => {
+    return create<RFState>((set, get) => ({
+        nodes: initialNodes,
+        edges: [],
 
-    propagateValue: (node: Node) => {
-        get().updateValue(node)
-        const outgoers = getOutgoers(node, get().nodes, get().edges)
-        outgoers.map((outgoer) => {
-            get().updateValue(outgoer)
-            get().propagateValue(outgoer)
-        })
-    },
-
-    setNodeVariable: (nodeId: string, variable: { name: string, value: number }) => {
-        set({
-            nodes: get().nodes.map((oldNode) => {
-                if (oldNode.id == nodeId) {
-                    oldNode.data.variableValues[variable.name] = variable.value
-                }
-                return oldNode
+        propagateValue: (node: Node) => {
+            get().updateValue(node)
+            const outgoers = getOutgoers(node, get().nodes, get().edges)
+            outgoers.map((outgoer) => {
+                get().updateValue(outgoer)
+                get().propagateValue(outgoer)
             })
-        })
-        get().propagateValue(get().getNode(nodeId))
-    },
+        },
 
-    setNodeValue: (node: Node) => {
-        set({
-            nodes: get().nodes.map((oldNode) => {
-                if (oldNode.id == node.id) {
-                    oldNode.data.values = node.data.values
-                }
-                return oldNode
+        setNodeVariable: (nodeId: string, variable: { name: string, value: number }) => {
+            set({
+                nodes: get().nodes.map((oldNode) => {
+                    if (oldNode.id == nodeId) {
+                        oldNode.data.variableValues[variable.name] = variable.value
+                    }
+                    return oldNode
+                })
             })
-        })
-    },
+            get().propagateValue(get().getNode(nodeId))
+        },
 
-    getHandleName: (io: NodeInput[] | NodeOutput[], handleId: string) => {
-        const handleName = io.filter((entry) => (
-            entry.id == handleId
-        ))[0].name
-
-        return handleName
-    },
-
-    updateEdges: (node: Node) => {
-        set({
-            edges: get().edges.map((edge) => {
-                if (edge.source == node.id) {
-                    const sourceName = get().getHandleName(node.data.outputs, edge.sourceHandle as string)
-                    const sourceValue = node.data.values[sourceName]
-
-                    edge.data = sourceValue
-                }
-                return edge
+        setNodeValue: (node: Node) => {
+            set({
+                nodes: get().nodes.map((oldNode) => {
+                    if (oldNode.id == node.id) {
+                        oldNode.data.values = node.data.values
+                    }
+                    return oldNode
+                })
             })
-        })
+        },
 
-    },
+        getHandleName: (io: NodeInput[] | NodeOutput[], handleId: string) => {
+            const handleName = io.filter((entry) => (
+                entry.id == handleId
+            ))[0].name
 
-    updateValue: (node: Node) => {
-        var inputEdges = get().edges.filter((edge) => (
-            edge.target == node.id
-        ))
+            return handleName
+        },
 
-        var values = inputEdges.map((edge) => {
-            const sourceNode = get().getNode(edge.source)
-            const sourceName = get().getHandleName(sourceNode.data.outputs, edge.sourceHandle as string)
-            const targetName = get().getHandleName(node.data.inputs, edge.targetHandle as string)
+        updateEdges: (node: Node) => {
+            set({
+                edges: get().edges.map((edge) => {
+                    if (edge.source == node.id) {
+                        const sourceName = get().getHandleName(node.data.outputs, edge.sourceHandle as string)
+                        const sourceValue = node.data.values[sourceName]
 
-            return {
-                [targetName]: sourceNode.data.values[sourceName]
-            }
-        })
+                        edge.data = sourceValue
+                    }
+                    return edge
+                })
+            })
 
-        var nodeInputs = values.reduce<{ [key: string]: number }>((acc, obj) => {
-            return { ...acc, ...obj };
-        }, {});
+        },
 
-        var newValues = node.data.transform({ ...nodeInputs, ...node.data.variableValues })
-        node.data.values = newValues
-        get().setNodeValue(node)
-        get().updateEdges(node)
+        updateValue: (node: Node) => {
+            var inputEdges = get().edges.filter((edge) => (
+                edge.target == node.id
+            ))
 
-    },
+            var values = inputEdges.map((edge) => {
+                const sourceNode = get().getNode(edge.source)
+                const sourceName = get().getHandleName(sourceNode.data.outputs, edge.sourceHandle as string)
+                const targetName = get().getHandleName(node.data.inputs, edge.targetHandle as string)
 
-    getNode: (id: string) => {
-        return get().nodes.filter((node) => (
-            node.id == id
-        ))[0]
-    },
+                return {
+                    [targetName]: sourceNode.data.values[sourceName]
+                }
+            })
 
-    addNode: (node: Node) => {
-        set({
-            nodes: [...get().nodes, node]
-        })
-    },
+            var nodeInputs = values.reduce<{ [key: string]: number }>((acc, obj) => {
+                return { ...acc, ...obj };
+            }, {});
 
-    onNodesChange: (changes: NodeChange[]) => {
-        set({
-            nodes: applyNodeChanges(changes, get().nodes),
-        });
-    },
-    onEdgesChange: (changes: EdgeChange[]) => {
-        set({
-            edges: applyEdgeChanges(changes, get().edges),
-        });
-    },
-    onConnect: (connection: Connection) => {
-        var edge = (connection as Edge)
-        edge.type = 'node'
+            var newValues = node.data.transform({ ...nodeInputs, ...node.data.variableValues })
+            node.data.values = newValues
+            get().setNodeValue(node)
+            get().updateEdges(node)
 
-        var sourceNode = get().getNode(edge.source)
+        },
 
-        edge.data = edge.data ?? {}
-        // edge.data = sourceNode.data.values.output
+        getNode: (id: string) => {
+            return get().nodes.filter((node) => (
+                node.id == id
+            ))[0]
+        },
 
-        set({
-            edges: addEdge(edge, get().edges),
-        });
+        addNode: (node: Node) => {
+            set({
+                nodes: [...get().nodes, node]
+            })
+        },
 
-        get().propagateValue(sourceNode)
-    },
-}));
+        onNodesChange: (changes: NodeChange[]) => {
+            set({
+                nodes: applyNodeChanges(changes, get().nodes),
+            });
+        },
+        onEdgesChange: (changes: EdgeChange[]) => {
+            set({
+                edges: applyEdgeChanges(changes, get().edges),
+            });
+        },
+        onConnect: (connection: Connection) => {
+            var edge = (connection as Edge)
+            edge.type = 'node'
 
-export default useStore;
+            var sourceNode = get().getNode(edge.source)
+
+            edge.data = edge.data ?? {}
+            // edge.data = sourceNode.data.values.output
+
+            set({
+                edges: addEdge(edge, get().edges),
+            });
+
+            get().propagateValue(sourceNode)
+        },
+    }))
+};
+
+// const useStore = createStore();
+// const useCustomStore = createStore()
+
+// export { useCustomStore }
+// export default useStore

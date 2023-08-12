@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 import { addTransform, concatTransform, convTransform, inputTransform, maxPool2dTransform } from './transforms'
 
-export const Conv2D = () => ({
+export const Conv2D = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
     "type": "layer",
     "position": {
-        "x": 0,
-        "y": 0
+        "x": x,
+        "y": y
     },
     "data": {
         "name": "Conv2D",
@@ -60,12 +60,12 @@ export const Conv2D = () => ({
     }
 })
 
-export const Input = () => ({
+export const Input = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
     "type": "layer",
     "position": {
-        "x": 0,
-        "y": 0
+        "x": x,
+        "y": y
     },
     "data": {
         "name": "Input",
@@ -108,12 +108,12 @@ export const Input = () => ({
     }
 })
 
-export const MaxPool2D = () => ({
+export const MaxPool2D = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
     "type": "layer",
     "position": {
-        "x": 0,
-        "y": 0
+        "x": x,
+        "y": y
     },
     "data": {
         "name": "MaxPool2D",
@@ -140,9 +140,9 @@ export const MaxPool2D = () => ({
             }
         ],
         "variableValues": {
-            "kernel_size": 3,
-            "stride": 1,
-            "padding": 1,
+            "kernel_size": 2,
+            "stride": 2,
+            "padding": 0,
             "dilation": 1
         },
         "inputs": [
@@ -161,12 +161,12 @@ export const MaxPool2D = () => ({
     }
 })
 
-export const Concat = () => ({
+export const Concat = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
     "type": "layer",
     "position": {
-        "x": 0,
-        "y": 0
+        "x": x,
+        "y": y
     },
     "data": {
         "name": "Concat",
@@ -194,12 +194,12 @@ export const Concat = () => ({
     }
 })
 
-export const Add = () => ({
+export const Add = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
     "type": "layer",
     "position": {
-        "x": 0,
-        "y": 0
+        "x": x,
+        "y": y
     },
     "data": {
         "name": "Add",
