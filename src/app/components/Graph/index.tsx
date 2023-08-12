@@ -57,6 +57,7 @@ function Graph() {
                         proOptions={{ hideAttribution: true }}
                         nodesDraggable={true}
                         elementsSelectable={true}
+                        multiSelectionKeyCode="Control"
                     >
                         <Background variant={BackgroundVariant.Dots} gap={30} size={1} />
                         <ToolBar />

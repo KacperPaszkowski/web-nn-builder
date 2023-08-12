@@ -25,7 +25,7 @@ export default function Home() {
       className='w-screen h-screen bg-background'
     >
       <div
-        className='flex flex-row gap-1 text-white w-full h-10 absolute top-0 bg-background bg-node z-10'
+        className='flex flex-row gap-0.5 text-white w-full h-10 absolute top-0 bg-background bg-node z-10'
       >
         {stores.map((store: storeContainer) => (
           <div

@@ -17,7 +17,7 @@ type NodeData = {
     outputs?: NodeOutput[]
 }
 
-function Node({ id, data }: NodeProps<NodeData>) {
+function Node({ id, selected, data }: NodeProps<NodeData>) {
     const store = useContext(StoreContext);
     if (!store) {
         return <></>
@@ -33,7 +33,7 @@ function Node({ id, data }: NodeProps<NodeData>) {
 
     return (
         <div
-            className='flex flex-col w-60 bg-background bg-node rounded-md shadow-lg [&>*:last-child]:rounded-b-md [&>*:last-child]:mb-3'
+            className={`flex flex-col w-60 bg-background bg-node rounded-md shadow-lg [&>*:last-child]:rounded-b-md [&>*:last-child]:mb-3 ${selected ? 'ring-1' : ""}`}
         >
             <div
                 className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white mb-3'
@@ -72,7 +72,7 @@ function Node({ id, data }: NodeProps<NodeData>) {
                         id={input.id}
                         type='target'
                         position={Position.Left}
-                        isValidConnection={validateConnection}
+                        isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
                     />
                     <p
                         className='text-neutral-300 text-md px-1 font-roboto uppercase'
@@ -103,7 +103,7 @@ function Node({ id, data }: NodeProps<NodeData>) {
                         id={output.id}
                         type='source'
                         position={Position.Right}
-                        isValidConnection={validateConnection}
+                        isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
 
                     />
                 </div>
