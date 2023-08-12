@@ -10,6 +10,7 @@ import { RFState } from "@/app/types";
 import ToolBar from "../ToolBar";
 import { StoreApi, UseBoundStore } from "zustand";
 import { StoreContext } from "@/app/store/provider";
+import ContextMenu from "../ContextMenu";
 
 const selector = (state: RFState) => ({
     nodes: state.nodes,
@@ -43,22 +44,24 @@ function Graph() {
     return (
         <ReactFlowProvider>
             <div className="w-screen h-screen">
-                <ReactFlow
-                    id={uuidv4()}
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    nodeTypes={nodeTypes}
-                    edgeTypes={edgeTypes}
-                    proOptions={{ hideAttribution: true }}
-                    nodesDraggable={true}
-                    elementsSelectable={true}
-                >
-                    <Background variant={BackgroundVariant.Dots} gap={30} size={1} />
-                    <ToolBar />
-                </ReactFlow>
+                <ContextMenu>
+                    <ReactFlow
+                        id={uuidv4()}
+                        nodes={nodes}
+                        edges={edges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        nodeTypes={nodeTypes}
+                        edgeTypes={edgeTypes}
+                        proOptions={{ hideAttribution: true }}
+                        nodesDraggable={true}
+                        elementsSelectable={true}
+                    >
+                        <Background variant={BackgroundVariant.Dots} gap={30} size={1} />
+                        <ToolBar />
+                    </ReactFlow>
+                </ContextMenu>
             </div>
         </ReactFlowProvider>
     );
