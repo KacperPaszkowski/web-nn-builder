@@ -11,6 +11,7 @@ import ToolBar from "../ToolBar";
 import { StoreApi, UseBoundStore } from "zustand";
 import { StoreContext } from "@/app/store/provider";
 import ContextMenu from "../ContextMenu";
+import ValueNode from "../ValueNode";
 
 const selector = (state: RFState) => ({
     nodes: state.nodes,
@@ -30,7 +31,8 @@ const edgeTypes = {
 }
 
 const nodeTypes = {
-    "layer": Node
+    "layer": Node,
+    "value": ValueNode
 }
 
 function Graph() {

@@ -226,3 +226,28 @@ export const Add = ({ x, y }: { x: number, y: number }) => ({
         "transform": addTransform
     }
 })
+
+export const Variable = ({ x, y }: { x: number, y: number }) => ({
+    "id": uuidv4(),
+    "type": "value",
+    "position": {
+        "x": x,
+        "y": y
+    },
+    "data": {
+        "name": "Variable",
+        "variables": [
+        ],
+        "variableValues": {
+        },
+        "inputs": [
+        ],
+        "outputs": [
+            {
+                "id": uuidv4(),
+                "name": "output"
+            }
+        ],
+        "transform": addTransform
+    }
+})
