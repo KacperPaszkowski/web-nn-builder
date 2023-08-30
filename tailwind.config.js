@@ -21,17 +21,20 @@ module.exports = {
         ...mauve,
         ...violet,
       },
+      fontSize: {
+        xxs: ['8px', '10px']
+      },
       fontFamily: {
         'roboto': ['Roboto', 'sans-serif'],
       },
       keyframes: {
         slideDown: {
-          from: { height: 0 },
-          to: { height: 'var(--radix-accordion-content-height)' },
+          from: { maxHeight: 0 },
+          to: { maxHeight: '500px' },
         },
         slideUp: {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
+          from: { maxHeight: '500px' },
+          to: { maxHeight: 0 },
         },
       },
       animation: {

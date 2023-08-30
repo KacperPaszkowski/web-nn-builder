@@ -12,7 +12,6 @@ export interface NodeOutput {
 
 export interface NodeVariable {
     id: string
-    type: string
     displayName: string
     name: string
 }

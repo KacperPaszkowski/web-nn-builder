@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { useState, useEffect, useContext } from 'react';
-import { Handle, Position, Node as NodeType, NodeProps, useReactFlow } from 'reactflow';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { Handle, Position, Node as NodeType, NodeProps, useReactFlow, Connection } from 'reactflow';
 import Input from '../Input';
 import { NodeDefinition, NodeInput, NodeOutput, NodeVariable, NodeVariableValues, RFState } from '@/app/types';
 import { validateConnection } from "@/app/validate";
 import { v4 as uuidv4 } from 'uuid'
 import AccordionVariables from './variables';
 import { StoreContext } from '@/app/store/provider';
+import { useUpdateNodeInternals } from 'reactflow';
 
 type NodeData = {
     name: string
@@ -18,6 +19,20 @@ type NodeData = {
 }
 
 function Node({ id, selected, data }: NodeProps<NodeData>) {
+    const [hidden, setHidden] = useState(false);
+    const updateNodeInternals = useUpdateNodeInternals();
+    const accordionRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (accordionRef.current?.clientHeight as number < 50) {
+            setHidden(true)
+        }
+        else {
+            setHidden(false)
+        }
+        updateNodeInternals(id)
+    }, [accordionRef.current?.clientHeight, id, updateNodeInternals])
+
     const store = useContext(StoreContext);
     if (!store) {
         return <></>
@@ -36,25 +51,67 @@ function Node({ id, selected, data }: NodeProps<NodeData>) {
             className={`flex flex-col w-60 bg-background bg-node rounded-md shadow-lg [&>*:last-child]:rounded-b-md [&>*:last-child]:mb-3 ${selected ? 'ring-1' : ""}`}
         >
             <div
-                className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white mb-3'
+                className={`flex flex-col gap-3 py-[15px] justify-start items-center z-20 top-16 -left-[4px] absolute overflow-y-hidden overflow-x-hidden`}
+                style={{
+                    height: accordionRef.current?.clientHeight + "px",
+                    opacity: accordionRef.current?.clientHeight ?? 0,
+                }}
+            >
+                {data.variables?.map((variable) => (
+                    <div
+                        key={variable.id}
+                        className={`h-8 ${hidden ? 'absolute' : 'relative'} flex flex-row justify-center items-center`}
+                    >
+                        <Handle style={{
+                            position: 'relative',
+                            transform: `${hidden ? 'translate(100%,-200%)' : 'translate(50%,0)'}`,
+                            top: '0',
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: '#7e22ce'
+                        }}
+                            id={variable.id}
+                            type='target'
+                            position={Position.Left}
+                            isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
+                        />
+                    </div>
+
+                ))}
+            </div>
+            <div
+                className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white'
             >
                 {data.name}
             </div>
             {(data.variables ?? []).length > 0 &&
-                <AccordionVariables>
+                <AccordionVariables
+                    contentRef={accordionRef}
+                >
                     <div
                         className='flex flex-col gap-3 mb-3 w-full'
                     >
                         {data.variables?.map((variable) => (
-                            <Input
+                            <div
                                 key={variable.id}
-                                name={variable.displayName}
-                                value={data.variableValues[variable.name]}
-                                onChange={(event) => handleVariableChange(event, variable.name)}
-                            />
+                                className='flex flex-row'
+                            >
+                                <div
+                                    className='px-3'
+                                >
+
+                                    <Input
+                                        name={variable.displayName}
+                                        value={data.variableValues[variable.name]}
+                                        onChange={(event) => handleVariableChange(event, variable.name)}
+                                    />
+                                </div>
+                            </div>
+
                         ))}
                     </div>
                 </AccordionVariables>
+
             }
             {data.inputs?.map((input) => (
                 <div
