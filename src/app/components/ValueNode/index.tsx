@@ -18,6 +18,8 @@ type NodeData = {
 }
 
 function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
+    const [value, setValue] = useState<number>(data.variableValues.value);
+    console.log(data)
     const store = useContext(StoreContext);
     if (!store) {
         return <></>
@@ -28,6 +30,7 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
     const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!Number.isNaN(parseInt(event.target.value))) {
             state.onVariableChange(id, parseInt(event.target.value))
+            state.setNodeVariable(id, { name: "value", value: parseInt(event.target.value) })
         }
     }
 
@@ -73,7 +76,7 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
                         <Input
                             key={variable.id}
                             name={variable.name}
-                            value={5}
+                            value={value}
                             onChange={onValueChange}
                         // onChange={(event) => handleVariableChange(event, variable.name)}
                         />
