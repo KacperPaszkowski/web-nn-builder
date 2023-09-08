@@ -41,6 +41,7 @@ export type RFState = {
     setNodeVariable: (nodeId: string, variable: { name: string, value: number }) => void
     propagateValue: (node: Node) => void
     addNode: (node: Node) => void
+    onVariableChange: (nodeId: string, value: number) => void //TODO: Support other types 
 };
 
 export type ConvTransform = {

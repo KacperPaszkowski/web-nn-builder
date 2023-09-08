@@ -237,16 +237,16 @@ export const Variable = ({ x, y }: { x: number, y: number }) => ({
     "data": {
         "name": "Variable",
         "variables": [
+            {
+                "id": uuidv4(),
+                "name": "Value"
+            }
         ],
         "variableValues": {
         },
         "inputs": [
         ],
         "outputs": [
-            {
-                "id": uuidv4(),
-                "name": "output"
-            }
         ],
         "transform": addTransform
     }

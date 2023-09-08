@@ -24,6 +24,10 @@ function Node({ id, selected, data }: NodeProps<NodeData>) {
     const accordionRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        console.log(data.variableValues)
+    }, [data])
+
+    useEffect(() => {
         if (accordionRef.current?.clientHeight as number < 50) {
             setHidden(true)
         }

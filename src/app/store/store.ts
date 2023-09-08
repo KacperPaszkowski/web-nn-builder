@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { NodeInput, NodeOutput, RFState } from '../types';
+import { NodeInput, NodeOutput, NodeVariable, RFState } from '../types';
 import {
     Connection,
     Edge,
@@ -24,6 +24,7 @@ export const createStore = () => {
         edges: [],
 
         propagateValue: (node: Node) => {
+            if (node.type == 'value') return
             get().updateValue(node)
             const outgoers = getOutgoers(node, get().nodes, get().edges)
             outgoers.map((outgoer) => {
@@ -33,10 +34,19 @@ export const createStore = () => {
         },
 
         setNodeVariable: (nodeId: string, variable: { name: string, value: number }) => {
+            console.log(nodeId, variable)
             set({
                 nodes: get().nodes.map((oldNode) => {
                     if (oldNode.id == nodeId) {
-                        oldNode.data.variableValues[variable.name] = variable.value
+                        oldNode.data = {
+                            ...oldNode.data,
+                            variableValues: {
+                                ...oldNode.data.variableValues,
+                                [variable.name]: variable.value
+                            }
+                        }
+                        // oldNode.data.variableValues[variable.name] = variable.value
+                        console.log(oldNode)
                     }
                     return oldNode
                 })
@@ -82,6 +92,14 @@ export const createStore = () => {
             var inputEdges = get().edges.filter((edge) => (
                 edge.target == node.id
             ))
+            console.log(inputEdges)
+
+            // Ensure that edges connecting variables are not taken into consideration
+            inputEdges = inputEdges.filter((edge: Edge) => (
+                get().getNode(edge.source).type != 'value'
+            ))
+
+            console.log(inputEdges)
 
             var values = inputEdges.map((edge) => {
                 const sourceNode = get().getNode(edge.source)
@@ -140,6 +158,42 @@ export const createStore = () => {
             });
 
             get().propagateValue(sourceNode)
+        },
+        onVariableChange: (nodeId: string, value: number) => {
+            const variableNode = get().nodes.filter((node: Node) => (
+                node.id == nodeId
+            ))[0]
+
+            const connectedEdges = get().edges.filter((edge: Edge) => (
+                edge.source == nodeId
+            ))
+
+            console.log(connectedEdges)
+
+            connectedEdges.map((edge: Edge) => {
+                const connectedNode = get().nodes.filter((node: Node) => (
+                    node.id == edge.target
+                ))[0]
+
+                console.log(connectedNode)
+
+                const variable = connectedNode.data.variables.filter((variable: NodeVariable) => (
+                    variable.id == edge.targetHandle
+                ))[0]
+
+                console.log(variable)
+
+                get().setNodeVariable(connectedNode.id, { name: variable.name, value: value })
+            })
+
+            // const outgoers = getOutgoers(variableNode, get().nodes, get().edges)
+            // outgoers.map((node: Node) => {
+            //     console.log(node.data.variables)
+            //     const variables = node.data.variables
+            //     variable
+            // })
+
+            console.log(nodeId, value)
         },
     }))
 };

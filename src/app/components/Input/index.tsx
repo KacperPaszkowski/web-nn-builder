@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid'
 
 interface InputProps {
@@ -10,6 +10,10 @@ interface InputProps {
 
 function Input({ name, type = "text", onChange, value }: InputProps) {
     const [inputValue, setInputValue] = useState<string | number>(value);
+
+    useEffect(() => {
+        setInputValue(value)
+    }, [value])
 
     const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
         if (!event.target.value || /^\d+$/.test(event.target.value)) {
