@@ -146,7 +146,8 @@ export const createStore = () => {
         },
         onConnect: (connection: Connection) => {
             var edge = (connection as Edge)
-            edge.type = 'node'
+            // if (get().getNode(edge.source).type == "value") edge.type = "value"
+            edge.type = get().getNode(edge.source).type
 
             var sourceNode = get().getNode(edge.source)
 

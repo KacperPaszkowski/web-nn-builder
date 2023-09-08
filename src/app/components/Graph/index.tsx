@@ -12,6 +12,7 @@ import { StoreApi, UseBoundStore } from "zustand";
 import { StoreContext } from "@/app/store/provider";
 import ContextMenu from "../ContextMenu";
 import ValueNode from "../ValueNode";
+import VariableEdge from "../VariableConnection";
 
 const selector = (state: RFState) => ({
     nodes: state.nodes,
@@ -21,13 +22,10 @@ const selector = (state: RFState) => ({
     onConnect: state.onConnect,
 });
 
-const initialNodes: NodeType[] = [
-    { id: '1', type: 'layer', position: { x: 0, y: 0 }, data: { name: 'Conv2D', variables: [{ id: '1', name: 'Filters' }, { id: '2', name: 'Kernel size' }], inputs: [{ id: '1', name: 'in1' }], outputs: [{ id: '1', name: 'out1' }] } },
-    { id: '2', type: 'layer', position: { x: 0, y: 0 }, data: { name: 'Conv2D', variables: [{ id: '1', name: 'Filters' }, { id: '2', name: 'Kernel size' }], inputs: [{ id: '1', name: 'in1' }], outputs: [{ id: '1', name: 'out1' }] } },
-];
 
 const edgeTypes = {
-    "node": NodeEdge
+    "layer": NodeEdge,
+    "value": VariableEdge
 }
 
 const nodeTypes = {

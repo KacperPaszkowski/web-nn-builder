@@ -14,7 +14,9 @@ export default function NodeEdge({
     data,
     sourcePosition,
     targetPosition,
-    style = {},
+    style = {
+        stroke: "#2563eb"
+    },
     markerEnd,
 }: EdgeProps<EdgeData>) {
     const [edgePath, labelX, labelY] = getBezierPath({
@@ -30,31 +32,27 @@ export default function NodeEdge({
     return (
         <>
             <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
-            {Object.keys(data ?? {}).length > 0 ?
-                <EdgeLabelRenderer>
+            <EdgeLabelRenderer>
+                <div
+                    style={{
+                        position: 'absolute',
+                        transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                        fontSize: 12,
+                        pointerEvents: 'all',
+                    }}
+                    className="nodrag nopan"
+                >
                     <div
-                        style={{
-                            position: 'absolute',
-                            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                            fontSize: 12,
-                            pointerEvents: 'all',
-                        }}
-                        className="nodrag nopan"
+                        className='flex justify-center items-center h-8 rounded-full bg-blue-600 px-3'
                     >
-                        <div
-                            className='flex justify-center items-center h-8 rounded-full bg-blue-600 px-3'
+                        <p
+                            className='text-white font-bold'
                         >
-                            <p
-                                className='text-white font-bold'
-                            >
-                                {data?.join(", ")}
-                            </p>
-                        </div>
+                            {data?.join(", ")}
+                        </p>
                     </div>
-                </EdgeLabelRenderer>
-                :
-                <></>
-            }
+                </div>
+            </EdgeLabelRenderer>
         </>
     );
 }

@@ -23,9 +23,6 @@ function Node({ id, selected, data }: NodeProps<NodeData>) {
     const updateNodeInternals = useUpdateNodeInternals();
     const accordionRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        console.log(data.variableValues)
-    }, [data])
 
     useEffect(() => {
         if (accordionRef.current?.clientHeight as number < 50) {
@@ -49,6 +46,10 @@ function Node({ id, selected, data }: NodeProps<NodeData>) {
             state.setNodeVariable(id, { name: varName, value: parseInt(event.target.value) })
         }
     }
+
+    // const onStateChange = (nodeState: number) => {
+    //     state.setNodeVariable(id, {name: "isHidden", value: nodeState})
+    // }
 
     return (
         <div

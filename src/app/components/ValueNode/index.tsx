@@ -19,7 +19,7 @@ type NodeData = {
 
 function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
     const [value, setValue] = useState<number>(data.variableValues.value);
-    console.log(data)
+
     const store = useContext(StoreContext);
     if (!store) {
         return <></>
