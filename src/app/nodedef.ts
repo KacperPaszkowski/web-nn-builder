@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { addTransform, concatTransform, convTransform, inputTransform, maxPool2dTransform } from './transforms'
+import { addTransform, concatTransform, convTransform, inputTransform, maxPool2dTransform, mulTransform, variableTransform } from './transforms'
 
 export const Conv2D = ({ x, y }: { x: number, y: number }) => ({
     "id": uuidv4(),
@@ -253,6 +253,47 @@ export const Variable = ({ x, y }: { x: number, y: number }) => ({
                 "name": "output"
             }
         ],
-        "transform": addTransform
+        "transform": variableTransform
+    }
+})
+
+export const MulOp = ({ x, y }: { x: number, y: number }) => ({
+    "id": uuidv4(),
+    "type": "value",
+    "position": {
+        "x": x,
+        "y": y
+    },
+    "data": {
+        "name": "Mul OP",
+        "variables": [
+            {
+                "id": uuidv4(),
+                "name": "factor_a",
+                "displayName": "Factor"
+            },
+            {
+                "id": uuidv4(),
+                "name": "factor_b",
+                "displayName": "Factor"
+            }
+        ],
+        "variableValues": {
+            "factor_a": 1,
+            "factor_b": 1
+        },
+        "inputs": [
+            // {
+            //     "id": uuidv4(),
+            //     "name": ""
+            // }
+        ],
+        "outputs": [
+            {
+                "id": uuidv4(),
+                "name": "output"
+            }
+        ],
+        "transform": mulTransform
     }
 })

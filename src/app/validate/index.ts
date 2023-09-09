@@ -6,10 +6,11 @@ const checkTypeMatch = (nodes: Node[], connection: Connection) => {
     const sourceNode = nodes.filter((node) => (
         node.id == connection.source
     ))[0]
-    var sourceVariables = sourceNode.data.variables.map((variable: NodeVariable) => (
-        variable.id
-    ))
-    const isSourceVariable = sourceVariables.includes(connection.sourceHandle) || sourceNode.type == "value"
+    // var sourceVariables = sourceNode.data.variables.map((variable: NodeVariable) => (
+    // variable.id
+    // ))
+
+    const isSourceVariable = sourceNode.type == "value" //sourceVariables.includes(connection.sourceHandle) ||
 
     const targetNode = nodes.filter((node) => (
         node.id == connection.target
@@ -20,7 +21,7 @@ const checkTypeMatch = (nodes: Node[], connection: Connection) => {
     ))
     const isTargetVariable = targetVariables.includes(connection.targetHandle)
 
-    return isSourceVariable == isTargetVariable
+    return isSourceVariable == isTargetVariable || sourceNode.type == targetNode.type
 }
 
 export const validateConnection = (nodes: Node[], edges: Edge[], connection: Connection) => {

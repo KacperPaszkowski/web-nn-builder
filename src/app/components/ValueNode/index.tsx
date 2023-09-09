@@ -11,7 +11,7 @@ import { useUpdateNodeInternals } from 'reactflow';
 
 type NodeData = {
     name: string
-    transform?: (inputs: { [key: string]: number[] }) => number[]
+    transform: (inputs: { [key: string]: number }) => number
     variables?: NodeVariable[]
     variableValues: NodeVariableValues
     inputs?: NodeInput[]
@@ -41,10 +41,12 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
 
     const state: RFState = store()
 
-    const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onValueChange = (event: React.ChangeEvent<HTMLInputElement>, valueName: string) => {
         if (!Number.isNaN(parseInt(event.target.value))) {
-            state.onVariableChange(id, parseInt(event.target.value))
-            state.setNodeVariable(id, { name: "value", value: parseInt(event.target.value) })
+            const newValue = { name: valueName, value: parseInt(event.target.value) }
+            state.setNodeVariable(id, newValue)
+            // console.log({ ...data.variableValues, [newValue.name]: newValue.value })
+            state.onVariableChange(id, data.transform({ ...data.variableValues, [newValue.name]: newValue.value }))
         }
     }
 
@@ -56,6 +58,35 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
         <div
             className={`flex flex-col w-48 bg-background bg-node rounded-md shadow-lg [&>*:last-child]:rounded-b-md [&>*:last-child]:mb-3 ${selected ? 'ring-1' : ""}`}
         >
+            <div
+                className={`flex flex-col gap-3 py-[15px] justify-start items-center z-20 top-16 -left-[4px] absolute overflow-y-hidden overflow-x-hidden`}
+                style={{
+                    height: accordionRef.current?.clientHeight + "px",
+                    opacity: accordionRef.current?.clientHeight ?? 0,
+                }}
+            >
+                {data.variables?.map((variable) => (
+                    <div
+                        key={variable.id}
+                        className={`h-8 ${hidden ? 'absolute' : 'relative'} flex flex-row justify-center items-center`}
+                    >
+                        <Handle style={{
+                            position: 'relative',
+                            transform: `${hidden ? 'translate(100%,-200%)' : 'translate(50%,0)'}`,
+                            top: '0',
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: '#7e22ce'
+                        }}
+                            id={variable.id}
+                            type='target'
+                            position={Position.Left}
+                            isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
+                        />
+                    </div>
+
+                ))}
+            </div>
             <div
                 className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white'
             >
@@ -80,7 +111,7 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
                                     <Input
                                         name={variable.displayName}
                                         value={data.variableValues[variable.name]}
-                                        onChange={onValueChange}
+                                        onChange={(event) => onValueChange(event, variable.name)}
                                     />
                                 </div>
                             </div>
@@ -90,6 +121,20 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
                 </AccordionVariables>
 
             }
+            <Handle style={{
+                position: 'relative',
+                transform: 'translate(0,0)',
+                opacity: `${!hidden ? '0' : '1'}`,
+                top: '11px',
+                width: '8px',
+                height: '8px',
+                backgroundColor: '#7e22ce'
+            }}
+                id={"dummy"}
+                type='target'
+                position={Position.Left}
+                isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
+            />
             {data.inputs?.map((input) => (
                 <div
                     key={input.id}

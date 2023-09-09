@@ -1,4 +1,4 @@
-import { ConvTransform, InputTransform, MaxPool2DTransform, ConcatTransform, AddTransform } from "./types"
+import { ConvTransform, InputTransform, MaxPool2DTransform, ConcatTransform, AddTransform, VariableTransform, MulTransform } from "./types"
 
 export const convTransform = ({ input = [NaN, NaN, NaN], filters = 1, kernel_size = 3, padding = 0, stride = 1, dilation = 1 }: ConvTransform) => {
     const hout = Math.trunc(((input[1] + (2 * padding) - (dilation * (kernel_size - 1)) - 1) / stride) + 1)
@@ -30,4 +30,13 @@ export const addTransform = ({ input_a, input_b }: AddTransform) => {
         return { 'output': input_a }
     }
     return { 'output': [0, 0, 0] }
+}
+
+// VALUE TRANFORMS
+export const variableTransform = ({ value }: VariableTransform) => {
+    return value
+}
+
+export const mulTransform = ({ factor_a, factor_b }: MulTransform) => {
+    return factor_a * factor_b
 }

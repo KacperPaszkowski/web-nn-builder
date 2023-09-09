@@ -76,3 +76,13 @@ export type AddTransform = {
     input_a: number[]
     input_b: number[]
 }
+
+// VALUE TRANSFORMS
+export type VariableTransform = {
+    value: number
+}
+
+export type MulTransform = {
+    factor_a: number
+    factor_b: number
+}
