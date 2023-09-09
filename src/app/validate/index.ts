@@ -9,7 +9,7 @@ const checkTypeMatch = (nodes: Node[], connection: Connection) => {
     var sourceVariables = sourceNode.data.variables.map((variable: NodeVariable) => (
         variable.id
     ))
-    const isSourceVariable = sourceVariables.includes(connection.sourceHandle)
+    const isSourceVariable = sourceVariables.includes(connection.sourceHandle) || sourceNode.type == "value"
 
     const targetNode = nodes.filter((node) => (
         node.id == connection.target

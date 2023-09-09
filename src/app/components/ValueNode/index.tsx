@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { useState, useEffect, useContext } from 'react';
-import { Handle, Position, Node as NodeType, NodeProps, useReactFlow } from 'reactflow';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { Handle, Position, Node as NodeType, NodeProps, useReactFlow, Connection } from 'reactflow';
 import Input from '../Input';
 import { NodeDefinition, NodeInput, NodeOutput, NodeVariable, NodeVariableValues, RFState } from '@/app/types';
 import { validateConnection } from "@/app/validate";
 import { v4 as uuidv4 } from 'uuid'
 import AccordionVariables from './variables';
 import { StoreContext } from '@/app/store/provider';
+import { useUpdateNodeInternals } from 'reactflow';
 
 type NodeData = {
     name: string
@@ -18,7 +19,20 @@ type NodeData = {
 }
 
 function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
-    const [value, setValue] = useState<number>(data.variableValues.value);
+    const [hidden, setHidden] = useState(false);
+    const updateNodeInternals = useUpdateNodeInternals();
+    const accordionRef = useRef<HTMLDivElement>(null)
+
+
+    useEffect(() => {
+        if (accordionRef.current?.clientHeight as number < 50) {
+            setHidden(true)
+        }
+        else {
+            setHidden(false)
+        }
+        updateNodeInternals(id)
+    }, [accordionRef.current?.clientHeight, id, updateNodeInternals])
 
     const store = useContext(StoreContext);
     if (!store) {
@@ -34,53 +48,53 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
         }
     }
 
+    // const onStateChange = (nodeState: number) => {
+    //     state.setNodeVariable(id, {name: "isHidden", value: nodeState})
+    // }
+
     return (
         <div
             className={`flex flex-col w-48 bg-background bg-node rounded-md shadow-lg [&>*:last-child]:rounded-b-md [&>*:last-child]:mb-3 ${selected ? 'ring-1' : ""}`}
         >
             <div
-                className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white mb-3'
+                className='flex justify-center items-center w-full h-10 bg-background bg-node-header rounded-md shadow-lg font-roboto text-md text-white'
             >
                 {data.name}
             </div>
-            {/* {(data.variables ?? []).length > 0 &&
-                <AccordionVariables>
+            {(data.variables ?? []).length > 0 &&
+                <AccordionVariables
+                    contentRef={accordionRef}
+                >
                     <div
-                        className='flex flex-col gap-3 mb-3 w-full'
+                        className='flex flex-col gap-3 w-full'
                     >
                         {data.variables?.map((variable) => (
-                            <Input
+                            <div
                                 key={variable.id}
-                                name={variable.displayName}
-                                value={data.variableValues[variable.name]}
-                                onChange={(event) => handleVariableChange(event, variable.name)}
-                            />
+                                className='flex flex-row'
+                            >
+                                <div
+                                    className='px-3'
+                                >
+
+                                    <Input
+                                        name={variable.displayName}
+                                        value={data.variableValues[variable.name]}
+                                        onChange={onValueChange}
+                                    />
+                                </div>
+                            </div>
+
                         ))}
                     </div>
                 </AccordionVariables>
-            } */}
 
-            {data.variables?.map((variable) => (
+            }
+            {data.inputs?.map((input) => (
                 <div
-                    key={variable.id}
-                    className='flex flex-row items-center w-full'
+                    key={input.id}
+                    className='flex flex-row justify-start items-center w-full h-8 hover:bg-background hover:bg-node-header'
                 >
-                    {/* <p
-                        className='text-neutral-300 text-md px-1 font-roboto uppercase'
-                    >
-                        {variable.name}
-                    </p> */}
-                    <div
-                        className='flex flex-col gap-3 w-full px-3'
-                    >
-                        <Input
-                            key={variable.id}
-                            name={variable.name}
-                            value={value}
-                            onChange={onValueChange}
-                        // onChange={(event) => handleVariableChange(event, variable.name)}
-                        />
-                    </div>
                     <Handle style={{
                         position: 'relative',
                         transform: 'translate(0,0)',
@@ -89,7 +103,38 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
                         height: '8px',
                         backgroundColor: '#7e22ce'
                     }}
-                        id={variable.id}
+                        id={input.id}
+                        type='target'
+                        position={Position.Left}
+                        isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
+                    />
+                    <p
+                        className='text-neutral-300 text-md px-1 font-roboto uppercase'
+                    >
+                        {input.name}
+                    </p>
+                </div>
+            ))}
+
+            {data.outputs?.map((output) => (
+                <div
+                    key={output.id}
+                    className='flex flex-row justify-end items-center w-full h-8 hover:bg-background hover:bg-node-header'
+                >
+                    <p
+                        className='text-neutral-300 text-md px-1 font-roboto uppercase'
+                    >
+                        {output.name}
+                    </p>
+                    <Handle style={{
+                        position: 'relative',
+                        transform: 'translate(0,0)',
+                        top: '0',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#7e22ce'
+                    }}
+                        id={output.id}
                         type='source'
                         position={Position.Right}
                         isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}

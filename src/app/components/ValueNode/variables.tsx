@@ -3,9 +3,9 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { AccordionItemProps } from '@radix-ui/react-accordion';
 import { BsThreeDots } from 'react-icons/bs'
 
-const AccordionVariables = ({ children }: { children: ReactNode }) => (
+const AccordionVariables = ({ children, contentRef }: { children: ReactNode, contentRef: Ref<HTMLDivElement> }) => (
     <AccordionPrimitive.Root
-        className="bg-background bg-node w-full rounded-md"
+        className="bg-background bg-node rounded-md"
         type="single"
         defaultValue="i-0"
         collapsible
@@ -14,7 +14,7 @@ const AccordionVariables = ({ children }: { children: ReactNode }) => (
             value='i-0'
         >
             <AccordionTrigger> </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent ref={contentRef}>
                 {children}
             </AccordionContent>
         </AccordionItem>
@@ -23,7 +23,7 @@ const AccordionVariables = ({ children }: { children: ReactNode }) => (
 
 const AccordionItem = React.forwardRef(({ children, value, ...props }: { children: ReactNode, value: string }, forwardedRef) => (
     <AccordionPrimitive.Item
-        className={'mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10'}
+        className={'mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 '}
         {...props as AccordionItemProps}
         value={value}
         ref={forwardedRef as Ref<HTMLDivElement>}
@@ -37,7 +37,7 @@ AccordionItem.displayName = "AccordionItem"
 const AccordionTrigger = React.forwardRef(({ children, ...props }: { children?: ReactNode }, forwardedRef) => (
     <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger
-            className='text-white group flex flex-row justify-center items-center flex-1 cursor-default bg-background bg-node py-1 text-[15px] leading-none outline-none'
+            className='text-white h-6 group flex flex-row justify-center items-center flex-1 cursor-default bg-background bg-node text-[15px] leading-none outline-none'
 
             {...props}
             ref={forwardedRef as Ref<HTMLButtonElement>}
@@ -57,7 +57,7 @@ const AccordionContent = React.forwardRef(({ children, ...props }: { children: R
         {...props}
         ref={forwardedRef as Ref<HTMLDivElement>}
     >
-        <div className="py-[15px] px-3">{children}</div>
+        <div className="py-[15px]">{children}</div>
     </AccordionPrimitive.Content>
 ));
 
