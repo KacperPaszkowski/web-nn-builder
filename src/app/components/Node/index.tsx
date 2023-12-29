@@ -118,6 +118,20 @@ function Node({ id, selected, data }: NodeProps<NodeData>) {
                 </AccordionVariables>
 
             }
+            {!data.inputs && <Handle style={{
+                position: 'relative',
+                transform: 'translate(0,0)',
+                opacity: `${!hidden ? '0' : '1'}`,
+                top: '11px',
+                width: '8px',
+                height: '8px',
+                backgroundColor: '#7e22ce'
+            }}
+                id={"dummy"}
+                type='target'
+                position={Position.Left}
+                isValidConnection={(connection) => validateConnection(state.nodes, state.edges, connection)}
+            />}
             {data.inputs?.map((input) => (
                 <div
                     key={input.id}

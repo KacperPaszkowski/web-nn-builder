@@ -20,8 +20,8 @@ const checkTypeMatch = (nodes: Node[], connection: Connection) => {
         variable.id
     ))
     const isTargetVariable = targetVariables.includes(connection.targetHandle)
-
-    return isSourceVariable == isTargetVariable || sourceNode.type == targetNode.type
+    console.log(isSourceVariable, isTargetVariable, sourceNode.type, targetNode.type)
+    return isSourceVariable == isTargetVariable && sourceNode.type == targetNode.type
 }
 
 export const validateConnection = (nodes: Node[], edges: Edge[], connection: Connection) => {

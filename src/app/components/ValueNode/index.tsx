@@ -46,7 +46,7 @@ function ValueNode({ id, selected, data }: NodeProps<NodeData>) {
             const newValue = { name: valueName, value: parseInt(event.target.value) }
             state.setNodeVariable(id, newValue)
             // console.log({ ...data.variableValues, [newValue.name]: newValue.value })
-            state.onVariableChange(id, data.transform({ ...data.variableValues, [newValue.name]: newValue.value }))
+            // state.onVariableChange(id, data.transform({ ...data.variableValues, [newValue.name]: newValue.value }))
         }
     }
 

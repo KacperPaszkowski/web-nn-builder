@@ -83,7 +83,7 @@ function ToolBar() {
                     className="w-full h-full p-3 text-white cursor-pointer"
                 />
             </div>
-
+            {/* 
             <div
                 className="w-12 h-12 bg-background bg-node hover:bg-node-header"
                 onClick={() => state.addNode(Variable(getPosition()))}
@@ -100,7 +100,7 @@ function ToolBar() {
                 <AiOutlinePlusCircle
                     className="w-full h-full p-3 text-white cursor-pointer"
                 />
-            </div>
+            </div> */}
 
         </div>
     );
