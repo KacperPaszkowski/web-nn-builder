@@ -8,7 +8,7 @@ import { StoreContext } from './store/provider'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { RFState } from './types'
 import { StoreApi, UseBoundStore } from 'zustand'
-import { v4 as uuidv4 } from 'uuid'
+import Head from 'next/head'
 
 
 interface storeContainer {
@@ -24,6 +24,9 @@ export default function Home() {
     <div
       className='w-screen h-screen bg-background'
     >
+      <Head>
+        <title>Web Neural Network Builder</title>
+      </Head>
       <div
         className='flex flex-row gap-0.5 text-white w-full h-10 absolute top-0 bg-background bg-node z-10'
       >
